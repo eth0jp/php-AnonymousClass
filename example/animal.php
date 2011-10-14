@@ -29,8 +29,8 @@ $dog = AnonymousClass::create(function($self, $name) {
 });
 $dog->prototype = $animal();
 
-$poti = $dog('pochi');
-$poti->hello();
+$pochi = $dog('pochi');
+$pochi->hello();
 
 
 // Cat
@@ -73,8 +73,8 @@ var dog = function(name) {
 };
 dog.prototype = new animal();
 
-var poti = new dog("pochi");
-poti.hello();
+var pochi = new dog("pochi");
+pochi.hello();
 
 
 // Cat
