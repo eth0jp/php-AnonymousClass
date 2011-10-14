@@ -1,4 +1,5 @@
 <?php
+
 require_once 'AnonymousClass/Exception.php';
 
 class AnonymousClass

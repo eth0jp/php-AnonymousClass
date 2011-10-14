@@ -44,3 +44,49 @@ $cat->cry = function($self) {
 $tama = $cat();
 $tama->name = "tama";
 $tama->hello();
+
+
+/* JavaScript
+// Animal
+
+var animal = function() {
+	this.cry_count = 0;
+
+	this.cry = function() {
+		console.log("unknown...");
+	};
+};
+animal.prototype.hello = function() {
+	console.log("Hello "+this.name);
+	this.cry();
+};
+
+
+// Dog
+
+var dog = function(name) {
+	this.name = name;
+	this.cry = function() {
+		console.log("wan!");
+		this.cry_count++;
+	};
+};
+dog.prototype = new animal();
+
+var poti = new dog("pochi");
+poti.hello();
+
+
+// Cat
+
+var cat = new animal();
+cat.cry = function() {
+	console.log("nyaa!");
+	this.cry_count++;
+};
+
+var tama = (function() {var F=function(){}; F.prototype=cat; return new F();})();
+console.log(tama);
+tama.name = "tama";
+tama.hello();
+*/
