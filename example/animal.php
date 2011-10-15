@@ -46,7 +46,9 @@ $tama->name = "tama";
 $tama->hello();
 
 
-/* JavaScript
+/*
+// JavaScript
+
 // Animal
 
 var animal = function() {
