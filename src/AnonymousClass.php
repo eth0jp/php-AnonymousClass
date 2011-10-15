@@ -37,14 +37,61 @@ class AnonymousClass
 	 */
 	public function newInstance()
 	{
+		// constructor
 		$construct = $this->_construct;
 
-		$args = func_get_args();
+		// constructor arguments
+		$arguments = func_get_args();
 		$self = new self(null, $this);
-		array_unshift($args, $self);
+		array_unshift($arguments, $self);
 
-		call_user_func_array($construct, $args);
+		// call constructor
+		call_user_func_array($construct, $arguments);
+
 		return $self;
+	}
+
+	/**
+	 * extend
+	 *
+	 * Add $module properties to $this.
+	 * This method is similar to ruby's include/extend method.
+	 *
+	 * @param AnonymousClass $module
+	 *
+	 * @return AnonymousClass
+	 */
+	public function extend(AnonymousClass $module)
+	{
+		// extend task
+		$task = array();
+		while ($module) {
+			array_unshift($task, $module);
+			$module = $module->_prototype;
+		}
+
+		// extend
+		foreach ($task as $module)  {
+			foreach ($module->_properties as $key=>$value) {
+				$this->$key = $value;
+			}
+		}
+
+		// call extended
+		$extended = null;
+		try {
+			$extended = $module->extended;
+		} catch (AnonymousClass_Exception $e) {
+		}
+		if (isset($extended)) {
+			if (is_callable($extended)) {
+				$extended($module, $this);
+			} else {
+				throw new AnonymousClass_Exception('Call to undefined method: '.get_class($module).'::extended');
+			}
+		}
+
+		return $this;
 	}
 
 	/**
@@ -60,8 +107,7 @@ class AnonymousClass
 	public function hasProperty($name)
 	{
 		try {
-			$val = $this->$name;
-			//return isset($val);
+			$value = $this->$name;
 			return true;
 		} catch(AnonymousClass_Exception $e) {
 		}
@@ -71,7 +117,7 @@ class AnonymousClass
 	/**
 	 * hasOwnProperty
 	 *
-	 * Returns a boolean indicating whether the object has the specified property.
+	 * Returns true if the specified property is in the specified object.
 	 * Prototype is not evaluated.
 	 *
 	 * @param $name Property name
@@ -80,7 +126,6 @@ class AnonymousClass
 	 */
 	public function hasOwnProperty($name)
 	{
-		//return isset($this->_properties[$name]);
 		return array_key_exists($name, $this->_properties);
 	}
 
@@ -151,8 +196,8 @@ class AnonymousClass
 	public function __isset($name)
 	{
 		try {
-			$val = $this->$name;
-			return isset($val);
+			$value = $this->$name;
+			return isset($value);
 		} catch(AnonymousClass_Exception $e) {
 		}
 		return false;
