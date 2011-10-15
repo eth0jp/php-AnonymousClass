@@ -1,0 +1,17 @@
+*AnonymousClass
+無名クラスっぽいもの定義するクラス。
+JavaScriptっぽい。
+
+**主なメソッド
+***AnonymousClass::create(Closure $construct=null, AnonymousClass $prototype=null)
+無名クラスを定義する。
+第1引数は、定義する無名クラスのコンストラクタ。
+第2引数は、プロトタイプ。
+
+***AnonymousClass->__invoke($args ...)
+定義した無名クラスをインスタンス化する。
+引数はAnonymousClassインスタンス自身がunshiftされて、そのまま無名クラスのコンストラクタに渡される。
+
+**サンプル
+ここらを参照。
+https://github.com/eth0jp/php-AnonymousClass/tree/master/example
