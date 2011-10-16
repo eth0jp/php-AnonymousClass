@@ -5,7 +5,7 @@ require_once 'AnonymousClass/Exception.php';
 class AnonymousClass
 {
 	protected $_construct = null;
-	protected $_properties = array();
+	protected $_properties = null;
 	protected $_prototype = null;
 
 	/**
@@ -25,6 +25,7 @@ class AnonymousClass
 			$construct = function(){};
 		}
 		$this->_construct = $construct;
+		$this->_properties = array();
 		$this->_prototype = $prototype;
 	}
 
@@ -269,5 +270,60 @@ class AnonymousClass
 	public static function create(Closure $construct=null, AnonymousClass $prototype=null)
 	{
 		return new self($construct, $prototype);
+	}
+
+	public static function createByObject($object)
+	{
+		if (!is_object($object)) {
+			$func = get_called_class().'::createByObject()';
+			throw new AnonymousClass_Exception('Argument 1 passed to '.$func.' must be an instance of some class');
+		}
+		if ($object instanceof AnonymousClass) {
+			return $object;
+		}
+
+		$self = new self();
+		$object = clone $object;
+		$class = new ReflectionObject($object);
+
+		// copy properties
+		$properties = $class->getProperties();
+		foreach ($properties as $property) {
+			$property->setAccessible(true);
+			$name = $property->getName();
+			$self->$name = null;
+			$self->$name = $property->getValue($object);
+		}
+
+		// copy methods
+		$methods = $class->getMethods();
+		foreach ($methods as $method) {
+			$name = $method->getName();
+			$self->$name = function($self) use($object, $properties, $method) {
+				$args = func_get_args();
+				$self = array_shift($args);
+
+				// set AnonymousClass to Class
+				foreach ($properties as $property) {
+					$property->setAccessible(true);
+					$name = $property->getName();
+					$property->setValue($object, $self->$name);
+				}
+
+				// call
+				$retval = $method->invokeArgs($object, $args);
+
+				// set Class to AnonymousClass
+				foreach ($properties as $property) {
+					$property->setAccessible(true);
+					$name = $property->getName();
+					$self->$name = $property->getValue($object);
+				}
+
+				return $retval;
+			};
+		}
+
+		return $self;
 	}
 }
