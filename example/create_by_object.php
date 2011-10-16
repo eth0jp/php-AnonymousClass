@@ -49,7 +49,7 @@ module Calc2
   end
 end
 
-calc = nil
+calc = Class.new
 calc.extend(Calc1)
 calc.extend(Calc2)
 
